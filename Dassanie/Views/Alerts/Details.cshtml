@@ -1,0 +1,36 @@
+﻿@model Dassanie.Models.Alert
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Alert</h4>
+    <hr />
+    <dl class="row">
+        <dt class="col-sm-2">
+            @Html.DisplayNameFor(model=>model.TwitterFollowName)
+        </dt>
+        <dd class="col-sm-10">
+            @Html.DisplayFor(model=>model.TwitterFollowName)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.SMS)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.SMS)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.IncludeLink)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.IncludeLink)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model.AlertId">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

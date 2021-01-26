@@ -1,0 +1,34 @@
+{
+  "iisSettings": {
+    "windowsAuthentication": false,
+    "anonymousAuthentication": true,
+    "iisExpress": {
+      "applicationUrl": "http://localhost:64744",
+      "sslPort": 44333
+    }
+  },
+  "profiles": {
+    "IIS Express": {
+      "commandName": "IISExpress",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "emailAddressId": "14646",
+        "clickSendApiKey": "8DCE6E3B-11CB-923C-CD4B-D556CF1EB99B",
+        "twitterApiSecret": "pWlt8dV9Zis6PoDXvx1pA3UFYwAa2Yw0OXV0fwHHDIY1nCFvuZ",
+        "clickSendUser": "bill@billdlabs.com",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "twitterApiKey": "UQSqfIKrOiqmkl7qKo6sfZAsl"
+      }
+    },
+    "Dassanie": {
+      "commandName": "Project",
+      "launchBrowser": true,
+      "environmentVariables": {
+        "twitterApiSecret": "pWlt8dV9Zis6PoDXvx1pA3UFYwAa2Yw0OXV0fwHHDIY1nCFvuZ",
+        "ASPNETCORE_ENVIRONMENT": "Development",
+        "twitterApiKey": "UQSqfIKrOiqmkl7qKo6sfZAsl"
+      },
+      "applicationUrl": "https://localhost:5001;http://localhost:5000"
+    }
+  }
+}

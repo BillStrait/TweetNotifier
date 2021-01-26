@@ -1,0 +1,287 @@
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Mvc.Rendering;
+using Microsoft.EntityFrameworkCore;
+using Dassanie.Data;
+using Dassanie.Models;
+using LinqToTwitter;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Authorization;
+
+namespace Dassanie.Controllers
+{
+    [Authorize]
+    public class AlertsController : Controller
+    {
+        private readonly ApplicationDbContext _context;
+        private IdentityUser _user;
+        private TwitterContext _twtContext;
+        private UserDetail _userDetails;
+        public AlertsController(ApplicationDbContext context)
+        {
+            _context = context;
+        }
+
+        // GET: Alerts
+        public async Task<IActionResult> Index()
+        {
+            SetupUser();
+            
+            if (_user != null)
+            {
+                var alerts = _context.Alerts.Where(c => c.UserId == _user.Id)?.ToList();
+                var alertVMs = new List<AlertVM>();
+                
+                foreach(var alert in alerts)
+                {
+                    alertVMs.Add(new AlertVM(alert));
+                }
+
+
+                return View(alertVMs);
+
+            }
+
+            return View(await _context.Alerts.ToListAsync());
+        }
+
+        // GET: Alerts/Details/5
+        public async Task<IActionResult> Details(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            SetupUser();
+
+            var alert = await _context.Alerts
+                .FirstOrDefaultAsync(m => m.AlertId == id && m.UserId == _user.Id);
+            if (alert == null)
+            {
+                return NotFound();
+            }
+
+            return View(alert);
+        }
+
+        // GET: Alerts/Create
+        public IActionResult Create()
+        {
+            var follows = SetupFollowsList();
+
+            var vm = new AlertVM() { Followers = follows.OrderBy(c=>c.ScreenNameResponse).ToList() };
+            return View(vm);
+        }
+
+        // POST: Alerts/Create
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Create(string FollowerName, string TriggerWords, bool IncludeLink)
+        {
+            SetupUser();
+
+
+            if(string.IsNullOrWhiteSpace(TriggerWords) || string.IsNullOrWhiteSpace(FollowerName))
+            {
+                //TODO: Abstract creating an empty viewmodel. Add it here and the base create controller. Prolly can use the same thing
+                //for edit too.
+
+                return View(new AlertVM()
+                {
+                    Followers = SetupFollowsList(),
+                    AlertWords = TriggerWords,
+                    IncludeLink = IncludeLink
+                });
+            }
+            var followerInfo = FollowerName.Split(':');
+            int fId;
+
+            int.TryParse(followerInfo[0], out fId);
+
+            var alert = new Alert()
+            {
+                TriggerWords = TriggerWords,
+                SMS = true, //this is always true for now. When other alert options are added this will no longer be hard coded.
+                LastChecked = DateTime.UtcNow,
+                IncludeLink = IncludeLink,
+                TwitterFollowId = fId,
+                TwitterFollowName = followerInfo[1],
+                UserId = _user.Id
+            };
+
+            _context.Alerts.Add(alert);
+            var result = _context.SaveChangesAsync();
+
+            if (await result>0)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            return View(new AlertVM(alert));
+        }
+
+        // GET: Alerts/Edit/5
+        public async Task<IActionResult> Edit(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            SetupUser();
+            var alert = await _context.Alerts.FirstAsync(c=>c.AlertId == id && c.UserId == _userDetails.UserId);
+            if (alert == null)
+            {
+                return NotFound();
+            }
+            var followers = SetupFollowsList().OrderBy(c=>c.ScreenNameResponse).ToList();
+
+            var vm = new AlertVM(alert)
+            {
+                Followers = followers
+            };
+
+            return View(vm);
+        }
+
+        // POST: Alerts/Edit/5
+        // To protect from overposting attacks, enable the specific properties you want to bind to.
+        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int alertId, string followerName, string triggerWords, bool includeLink)
+        {
+            SetupUser();
+
+            var alert = await _context.Alerts.FirstAsync(c => c.AlertId == alertId && c.UserId == _userDetails.UserId);
+
+            if (alert == null)
+            {
+                return NotFound();
+            }
+
+
+            var followerInfo = followerName.Split(':');
+            int fId;
+
+            int.TryParse(followerInfo[0], out fId);
+
+            alert.TwitterFollowId = fId;
+            alert.TwitterFollowName = followerInfo[1];
+            alert.IncludeLink = includeLink;
+            alert.TriggerWords = triggerWords;
+
+            if (ModelState.IsValid)
+            {
+                try
+                {
+                    _context.Update(alert);
+                    await _context.SaveChangesAsync();
+                }
+                catch (DbUpdateConcurrencyException)
+                {
+                    if (!AlertExists(alert.AlertId))
+                    {
+                        return NotFound();
+                    }
+                    else
+                    {
+                        throw;
+                    }
+                }
+                return RedirectToAction(nameof(Index));
+            }
+            return View(alert);
+        }
+
+        // GET: Alerts/Delete/5
+        public async Task<IActionResult> Delete(int? id)
+        {
+            if (id == null)
+            {
+                return NotFound();
+            }
+            SetupUser();
+            var alert = await _context.Alerts
+                .FirstOrDefaultAsync(m => m.AlertId == id && m.UserId == _userDetails.UserId);
+            if (alert == null)
+            {
+                return NotFound();
+            }
+
+            return View(alert);
+        }
+
+        // POST: Alerts/Delete/5
+        [HttpPost, ActionName("Delete")]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> DeleteConfirmed(int id)
+        {
+            var alert = await _context.Alerts.FindAsync(id);
+            _context.Alerts.Remove(alert);
+            await _context.SaveChangesAsync();
+            return RedirectToAction(nameof(Index));
+        }
+
+        private void SetupUser()
+        {
+            _user = _context.Users.First(c => c.Email == HttpContext.User.Identity.Name);
+            _userDetails = _context.UserDetails.First(c => c.UserId == _user.Id);
+        }
+
+        private void SetupContext()
+        {
+            if(_userDetails == null)
+            {
+                _userDetails = _context.UserDetails.First(c => c.UserId == _user.Id);
+            }
+            
+            _twtContext = new TwitterContext(new MvcAuthorizer()
+            {
+                CredentialStore = new SessionStateCredentialStore(HttpContext.Session)
+                {
+                    OAuthToken = _userDetails.TwitterOAuthToken,
+                    OAuthTokenSecret = _userDetails.TwitterOAuthSecret,
+                    ConsumerKey = Environment.GetEnvironmentVariable("twitterApiKey"),
+                    ConsumerSecret = Environment.GetEnvironmentVariable("twitterApiSecret")
+                }
+            });
+        }
+        private bool AlertExists(int id)
+        {
+            return _context.Alerts.Any(e => e.AlertId == id);
+        }
+
+        private List<User> SetupFollowsList()
+        {
+            SetupUser();
+            SetupContext();
+            long csr = -1;
+            var follows = new List<User>();
+
+            do
+            {
+                var followerQuery = _twtContext.Friendship
+                    .Where(c => c.Count == 1000 && c.Cursor == csr && c.Type == FriendshipType.FriendsList
+                            && c.UserID == _userDetails.TwitterId.ToString() && c.SkipStatus == true)
+                    .SingleOrDefault();
+
+                if (followerQuery != null)
+                {
+                    follows.AddRange(followerQuery.Users);
+                    csr = followerQuery.CursorMovement.Next;
+                }
+                else
+                {
+                    csr = 0;
+                }
+            }
+            while (csr != 0);
+
+            return follows;
+        }
+    }
+}

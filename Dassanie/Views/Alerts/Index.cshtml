@@ -1,0 +1,49 @@
+﻿@model IEnumerable<Dassanie.Models.AlertVM>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            
+            <th>
+                Follow Name
+            </th>
+            <th>
+                Alert Words
+            </th>
+            <th>
+                Include the Link
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.FollowerName)
+            </td>
+            
+            <td>
+                @Html.DisplayFor(modelItem => item.AlertWords)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.IncludeLink)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.AlertId">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.AlertId">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.AlertId">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

@@ -1,0 +1,44 @@
+﻿@model Dassanie.Models.AlertVM
+
+@{
+    ViewData["Title"] = "Create Alert";
+}
+
+<h1>Create Alert</h1>
+<hr />
+<div class="row">
+    <div class="col-md-4">
+        <form asp-action="Create">
+            <div class="form-group">
+                <label class="control-label">Target User</label>
+                <div name="TwitterFollowreBox" style="display: block; width:25em; height:25em; overflow-x:hidden; overflow-y:scroll;">
+                    @foreach (var follower in Model.Followers)
+                    {
+                        <div style="display: block; margin-left: 1em; margin-right:1em;"><input type="radio" asp-for="FollowerName" value="@follower.UserIDResponse:@follower.Name" /> <label><img src="@follower.ProfileImageUrlHttps" alt="@follower.ScreenNameResponse" /> @follower.ScreenNameResponse</label></div>
+                    }
+                </div>
+            </div>
+            
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="IncludeLink" /> @Html.DisplayNameFor(model => model.IncludeLink)
+                </label>
+            </div>
+            <div class="form-group">
+                <label class="control-label">Trigger Words</label>
+                <input type="text"  name= "TriggerWords" placeholder="Seperate trigger words with a space" />
+            </div>
+            <div class="form-group">
+                <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+        </form>
+    </div>
+</div>
+
+<div>
+    <a asp-action="Index">Back to List</a>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
