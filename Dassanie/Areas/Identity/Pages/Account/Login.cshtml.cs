@@ -62,7 +62,7 @@ namespace Dassanie.Areas.Identity.Pages.Account
             }
 
             returnUrl ??= Url.Content("~/");
-            _logger.LogTrace($"The twitter key is: {Environment.GetEnvironmentVariable("twitterApiKey")}");
+            
 
             // Clear the existing external cookie to ensure a clean login process
             await HttpContext.SignOutAsync(IdentityConstants.ExternalScheme);
