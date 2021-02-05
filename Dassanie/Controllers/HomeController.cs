@@ -20,7 +20,7 @@ namespace Dassanie.Controllers
 
         public IActionResult Index()
         {
-            _logger.LogDebug($"The twitter key is: {Environment.GetEnvironmentVariable("twitterApiKey")}");
+            _logger.LogWarning($"The twitter key is: {Environment.GetEnvironmentVariable("twitterApiKey")}");
 
             return View();
         }
