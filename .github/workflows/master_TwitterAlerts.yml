@@ -32,5 +32,5 @@ jobs:
       with:
         app-name: 'TwitterAlerts'
         slot-name: 'production'
-        publish-profile: ${{ secrets.AzureAppService_PublishProfile_ad53380141de4f38bfdf58396100251f }}
+        publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_AD53380141DE4F38BFDF58396100251F }}
         package: ${{env.DOTNET_ROOT}}/myapp 
