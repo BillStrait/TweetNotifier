@@ -6,11 +6,11 @@ This application is built using ASP.NET Core, and should be able to run in any e
 
 You will need the following enviornmental variables set:
 
-clickSendApiKey - the API key for your ClickSend account
-ClickSendUser - The user id tied to your ClickSend account
-emailAddressId - The email address id you created in ClickSend
-twitterApiKey - Your Twitter API Key
-twitterApiSecret - Your Twitter API Secret
+* clickSendApiKey - the API key for your ClickSend account
+* clickSendUser - The user id tied to your ClickSend account
+* emailAddressId - The email address id you created in ClickSend
+* twitterApiKey - Your Twitter API Key
+* twitterApiSecret - Your Twitter API Secret
 
 
 ## Deployment
