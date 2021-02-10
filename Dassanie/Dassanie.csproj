@@ -7,6 +7,7 @@
 
   <ItemGroup>
     <Content Include="wwwroot\.well-known\pki-validation\godaddy.html" />
+    <Content Include="wwwroot\.well-known\pki-validation\if5ma54llli75iod3kejp08skm.html" />
   </ItemGroup>
 
   <ItemGroup>
