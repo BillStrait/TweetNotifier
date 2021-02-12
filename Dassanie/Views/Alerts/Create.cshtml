@@ -11,7 +11,8 @@
         <form asp-action="Create">
             <div class="form-group">
                 <label class="control-label">Target User</label>
-                <input id="FollowerName" />
+                <input id="FollowerName" name="FollowerName" />
+                <input id="FollowerId" type="hidden"/>
             </div>
             
             <div class="form-group form-check">
@@ -53,6 +54,7 @@
                     console.log(ui.item);
                     console.log(ui.item.screenNameResponse);
                     $("#FollowerName").val(ui.item.screenNameResponse);
+                    $("#FollowerId").val(ui.item.userID);
                     return false;
                     
                 }

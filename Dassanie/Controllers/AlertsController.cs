@@ -79,7 +79,7 @@ namespace Dassanie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string FollowerName, string TriggerWords, bool IncludeLink)
+        public async Task<IActionResult> Create(string FollowerName, ulong FollowerId, string TriggerWords, bool IncludeLink)
         {
             SetupUser();
 
@@ -95,10 +95,6 @@ namespace Dassanie.Controllers
                     IncludeLink = IncludeLink
                 });
             }
-            var followerInfo = FollowerName.Split(':');
-            int fId;
-
-            int.TryParse(followerInfo[0], out fId);
 
             var alert = new Alert()
             {
@@ -106,8 +102,8 @@ namespace Dassanie.Controllers
                 SMS = true, //this is always true for now. When other alert options are added this will no longer be hard coded.
                 LastChecked = DateTime.UtcNow,
                 IncludeLink = IncludeLink,
-                TwitterFollowId = fId,
-                TwitterFollowName = followerInfo[1],
+                TwitterFollowId = (int)FollowerId,
+                TwitterFollowName = FollowerName,
                 UserId = _user.Id
             };
 
