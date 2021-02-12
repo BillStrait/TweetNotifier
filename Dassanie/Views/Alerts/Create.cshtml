@@ -11,12 +11,7 @@
         <form asp-action="Create">
             <div class="form-group">
                 <label class="control-label">Target User</label>
-                <div name="TwitterFollowreBox" style="display: block; width:25em; height:25em; overflow-x:hidden; overflow-y:scroll;">
-                    @foreach (var follower in Model.Followers)
-                    {
-                        <div style="display: block; margin-left: 1em; margin-right:1em;"><input type="radio" asp-for="FollowerName" value="@follower.UserIDResponse:@follower.Name" /> <label><img src="@follower.ProfileImageUrlHttps" alt="@follower.ScreenNameResponse" /> @follower.ScreenNameResponse</label></div>
-                    }
-                </div>
+                <input id="FollowerName" />
             </div>
             
             <div class="form-group form-check">
@@ -41,4 +36,34 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    
+<script>
+    $(function () {
+        $("#FollowerName").change(function () {
+            console.log($("#FollowerName").val());
+        });
+            $("#FollowerName").autocomplete({
+                source: "../api/FollowerAPI",
+                minLength: 3,
+                focus: function (event, ui) {
+                    $("#FollowerName").val(ui.item.screenNameResponse);
+                },
+                select: function (event, ui) {
+                    console.log(ui);
+                    console.log(ui.item);
+                    console.log(ui.item.screenNameResponse);
+                    $("#FollowerName").val(ui.item.screenNameResponse);
+                    return false;
+                    
+                }
+            })
+                .autocomplete("instance")._renderItem = function (ul, item) {
+                    return $("<li>")
+                        .append("<div><img src='" + item.profileImageUrlHttps + "' alt='" + item.screenNameResponse + "' /> " + item.screenNameResponse + "</div>")
+                        .appendTo(ul);
+                };
+        }
+
+        );
+</script>
 }

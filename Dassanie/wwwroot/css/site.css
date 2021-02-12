@@ -69,3 +69,17 @@ body {
   white-space: nowrap;
   line-height: 60px; /* Vertically center the text there */
 }
+
+
+/* JQuery UI Support*/
+
+.ui-autocomplete-loading {
+    background: white url("../images/ui-anim_basic_16x16.gif") right center no-repeat;
+}
+
+.ui-widget-content {
+    background-color: #FFF;
+    list-style: none;
+    border: 1px solid black;
+    width: 10em;
+}

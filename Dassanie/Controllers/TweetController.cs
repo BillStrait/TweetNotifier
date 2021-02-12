@@ -53,8 +53,6 @@ namespace Dassanie.Controllers
 
                         var tweets = await _twtCtx.Status.Where(c => c.Type == StatusType.User && c.UserID == (ulong)alert.TwitterFollowId).ToListAsync();
 
-                        //var tweets = await _twtCtx.Search.Where(c => c.Type == StatusType.User && c. && c.Query == query).SingleOrDefaultAsync();
-
                         if (tweets != null && tweets.Any(c => DateTime.Compare(alert.LastChecked, c.CreatedAt) <= 0))
                         {
                             var newTweets = tweets.Where(c => DateTime.Compare(alert.LastChecked, c.CreatedAt) <= 0).ToList();

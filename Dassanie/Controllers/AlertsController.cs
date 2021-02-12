@@ -70,9 +70,7 @@ namespace Dassanie.Controllers
         // GET: Alerts/Create
         public IActionResult Create()
         {
-            var follows = SetupFollowsList();
-
-            var vm = new AlertVM() { Followers = follows.OrderBy(c=>c.ScreenNameResponse).ToList() };
+            var vm = new AlertVM() {  };
             return View(vm);
         }
 
@@ -93,7 +91,6 @@ namespace Dassanie.Controllers
 
                 return View(new AlertVM()
                 {
-                    Followers = SetupFollowsList(),
                     AlertWords = TriggerWords,
                     IncludeLink = IncludeLink
                 });
@@ -137,12 +134,8 @@ namespace Dassanie.Controllers
             {
                 return NotFound();
             }
-            var followers = SetupFollowsList().OrderBy(c=>c.ScreenNameResponse).ToList();
 
-            var vm = new AlertVM(alert)
-            {
-                Followers = followers
-            };
+            var vm = new AlertVM(alert);
 
             return View(vm);
         }
@@ -255,33 +248,6 @@ namespace Dassanie.Controllers
             return _context.Alerts.Any(e => e.AlertId == id);
         }
 
-        private List<User> SetupFollowsList()
-        {
-            SetupUser();
-            SetupContext();
-            long csr = -1;
-            var follows = new List<User>();
-
-            do
-            {
-                var followerQuery = _twtContext.Friendship
-                    .Where(c => c.Count == 1000 && c.Cursor == csr && c.Type == FriendshipType.FriendsList
-                            && c.UserID == _userDetails.TwitterId.ToString() && c.SkipStatus == true)
-                    .SingleOrDefault();
-
-                if (followerQuery != null)
-                {
-                    follows.AddRange(followerQuery.Users);
-                    csr = followerQuery.CursorMovement.Next;
-                }
-                else
-                {
-                    csr = 0;
-                }
-            }
-            while (csr != 0);
-
-            return follows;
-        }
+        
     }
 }
