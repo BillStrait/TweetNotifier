@@ -89,7 +89,6 @@ namespace Dassanie.Models
         public bool Email { get; set; }
         public bool IncludeLink { get; set; }
         public string AlertWords { get; set; }
-        public List<User> Followers { get; set; }
         public string FollowerName { get; set; }
         public int SelectedFollower { get; set; }
     }

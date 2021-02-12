@@ -141,25 +141,21 @@ namespace Dassanie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int alertId, string followerName, string triggerWords, bool includeLink)
+        public async Task<IActionResult> Edit(int alertId, string followerName, ulong followerId, string triggerWords, bool includeLink)
         {
             SetupUser();
 
             var alert = await _context.Alerts.FirstAsync(c => c.AlertId == alertId && c.UserId == _userDetails.UserId);
 
-            if (alert == null)
+            if (alert == null || string.IsNullOrEmpty(followerName) || followerId == 0) 
             {
                 return NotFound();
             }
 
 
-            var followerInfo = followerName.Split(':');
-            int fId;
 
-            int.TryParse(followerInfo[0], out fId);
-
-            alert.TwitterFollowId = fId;
-            alert.TwitterFollowName = followerInfo[1];
+            alert.TwitterFollowId = (int)followerId;
+            alert.TwitterFollowName = followerName;
             alert.IncludeLink = includeLink;
             alert.TriggerWords = triggerWords;
 

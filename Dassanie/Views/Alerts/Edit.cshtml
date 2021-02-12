@@ -14,20 +14,8 @@
             <div asp-validation-summary="ModelOnly" class="text-danger"></div>
             <input type="hidden" asp-for="AlertId" />
             <label class="control-label">Target User</label>
-            <div name="TwitterFollowreBox" style="display: block; width:25em; height:25em; overflow-x:hidden; overflow-y:scroll;">
-                @foreach (var follower in Model.Followers)
-                {
-                    @if (follower.UserIDResponse == Model.SelectedFollower.ToString())
-                    {
-                        <div style="display: block; margin-left: 1em; margin-right:1em;"><input type="radio" asp-for="FollowerName" value="@follower.UserIDResponse:@follower.Name" checked /> <label><img src="@follower.ProfileImageUrlHttps" alt="@follower.ScreenNameResponse" /> @follower.ScreenNameResponse</label></div>
-                    }
-                    else
-                    {
-                        <div style="display: block; margin-left: 1em; margin-right:1em;"><input type="radio" asp-for="FollowerName" value="@follower.UserIDResponse:@follower.Name" /> <label><img src="@follower.ProfileImageUrlHttps" alt="@follower.ScreenNameResponse" /> @follower.ScreenNameResponse</label></div>
-                    }
-
-                }
-            </div>
+             <input name="followerName" disabled="disabled" value="@Model.FollowerName" />
+             <input name="followerId" hidden="hidden" value="@Model.SelectedFollower"/>
 
             <div class="form-group form-check">
                 <label class="form-check-label">
