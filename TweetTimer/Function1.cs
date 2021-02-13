@@ -11,7 +11,7 @@ namespace TweetTimer
         [FunctionName("Function1")]
         public static void Run([TimerTrigger("0 */5 * * * *")]TimerInfo myTimer, ILogger log)
         {
-            var request = HttpWebRequest.Create("https://dassaniedev.azurewebsites.net/Tweet");
+            var request = HttpWebRequest.Create("https://twitteralerts.azurewebsites.net/Tweet");
             var result = request.GetResponse();
             //we don't care about the result, we only want to confirm it executes.
             log.LogInformation($"C# Timer trigger function executed at: {DateTime.Now}");
