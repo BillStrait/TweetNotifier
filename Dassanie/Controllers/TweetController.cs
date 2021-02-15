@@ -2,6 +2,7 @@
 using Dassanie.Helpers;
 using LinqToTwitter;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +16,11 @@ namespace Dassanie.Controllers
         private ApplicationDbContext _dbCtx;
         private TwitterContext _twtCtx;
         private MessageDeliveryHelper _messageHelper;
-        public TweetController(ApplicationDbContext dbCtx)
+        private ILogger<TweetController> _logger;
+        public TweetController(ILogger<TweetController> logger, ApplicationDbContext dbCtx)
         {
             _dbCtx = dbCtx;
+            _logger = logger;
             var auth = new MvcAuthorizer();
             _twtCtx = new TwitterContext(auth);
             _messageHelper = new MessageDeliveryHelper();
@@ -25,6 +28,7 @@ namespace Dassanie.Controllers
 
         public async Task<IActionResult> Index()
         {
+            _logger.LogTrace("The alert engine has been called.");
             SetUpTwitterContext();
             //This method is going to need to be rebuilt to scale up. At this point it's built with the belief
             //that the number of users/alerts will stay in the dozens-maybe-hundreds range
@@ -49,7 +53,7 @@ namespace Dassanie.Controllers
                         {
                             query += " " + word;
                         }
-
+                        alert.LastChecked = DateTime.Now;
 
                         var tweets = await _twtCtx.Status.Where(c => c.Type == StatusType.User && c.UserID == (ulong)alert.TwitterFollowId).ToListAsync();
 
@@ -61,12 +65,15 @@ namespace Dassanie.Controllers
                             {
                                 if (alert.AlertWords.Any(c => newTweet.Text.Contains(c, StringComparison.CurrentCultureIgnoreCase)))
                                 {
+                                    _logger.LogTrace($"We're sending {user.UserName} a tweet {newTweet.Text}");
                                     _messageHelper.SendAlertsAsync(user, alert, newTweet);
                                 }
                                 
                             }
-                        }  
+                        }
+                        _dbCtx.Update(alert);
                     }
+                    _dbCtx.SaveChanges();
                 }
 
             }
