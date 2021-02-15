@@ -53,7 +53,7 @@ namespace Dassanie.Controllers
                         {
                             query += " " + word;
                         }
-                        alert.LastChecked = DateTime.Now;
+                        alert.LastChecked = DateTime.UtcNow;
 
                         var tweets = await _twtCtx.Status.Where(c => c.Type == StatusType.User && c.UserID == (ulong)alert.TwitterFollowId).ToListAsync();
 
