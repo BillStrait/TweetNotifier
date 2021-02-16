@@ -49,17 +49,15 @@ namespace Dassanie.Controllers
                     _twtCtx.Authorizer.CredentialStore.OAuthTokenSecret = userDetails.TwitterOAuthSecret;
                     foreach(var alert in userAlerts)
                     {
-                        var query = "from:" + alert.TwitterFollowId.ToString();
-                        foreach (var word in alert.AlertWords)
-                        {
-                            query += " " + word;
-                        }
+                        _logger.LogInformation($"We are checking tweets for the following word(s): {alert.TriggerWords}. This is for user {alert.UserId} and the twitter user {alert.TwitterFollowName} - {alert.TwitterFollowId}");
+                        var query = "from:" + alert.TwitterFollowId.ToString() + " " + alert.TriggerWords;
                         
 
                         var tweets = await _twtCtx.Status.Where(c => c.Type == StatusType.User && c.UserID == (ulong)alert.TwitterFollowId).ToListAsync();
 
                         if (tweets != null && tweets.Any(c => DateTime.Compare(alert.LastChecked, c.CreatedAt) <= 0))
                         {
+                            _logger.LogInformation($"There were new tweets from {alert.TwitterFollowName} since {alert.LastChecked}");
                             var newTweets = tweets.Where(c => DateTime.Compare(alert.LastChecked, c.CreatedAt) <= 0).ToList();
 
                             foreach (var newTweet in newTweets)
