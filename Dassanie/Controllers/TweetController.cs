@@ -28,7 +28,8 @@ namespace Dassanie.Controllers
 
         public async Task<IActionResult> Index()
         {
-            //_logger.LogTrace("The alert engine has been called.");
+            
+            _logger.LogTrace("The alert engine has been called.");
             SetUpTwitterContext();
             //This method is going to need to be rebuilt to scale up. At this point it's built with the belief
             //that the number of users/alerts will stay in the dozens-maybe-hundreds range

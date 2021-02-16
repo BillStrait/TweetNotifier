@@ -7,6 +7,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Azure.Identity;
+using Microsoft.Extensions.Logging.AzureAppServices;
 
 namespace Dassanie
 {
@@ -19,9 +20,17 @@ namespace Dassanie
 
         public static IHostBuilder CreateHostBuilder(string[] args) =>
             Host.CreateDefaultBuilder(args)
+                .ConfigureLogging(logging=> logging.AddAzureWebAppDiagnostics())
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
-                    webBuilder.UseStartup<Startup>();
+                    webBuilder
+                        .UseStartup<Startup>()
+                        .ConfigureLogging(logging=>
+                        {
+                            logging.ClearProviders();
+                            logging.AddConsole();
+                            logging.AddAzureWebAppDiagnostics();
+                        });
                 });
     }
 }
