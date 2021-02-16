@@ -39,10 +39,21 @@ namespace Dassanie.Models
         {
             get
             {
-                return this.TriggerWords.Split(' ').ToList();
+                var aws = new List<string>();
+                var tws = this.TriggerWords.Split(' ').ToList();
+                foreach(var tw in tws)
+                {
+                    var t = tw.Trim();
+                    if (!string.IsNullOrEmpty(t))
+                    {
+                        aws.Add(t);
+                    }
+                }
+                return aws;
             }
             set
             {
+                this.TriggerWords = "";
                 foreach(var word in value)
                 {
                     this.TriggerWords += word + ' ';

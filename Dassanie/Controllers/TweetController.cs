@@ -50,7 +50,7 @@ namespace Dassanie.Controllers
                     foreach(var alert in userAlerts)
                     {
                         _logger.LogInformation($"We are checking tweets for the following word(s): {alert.TriggerWords}. This is for user {alert.UserId} and the twitter user {alert.TwitterFollowName} - {alert.TwitterFollowId}");
-                        var query = "from:" + alert.TwitterFollowId.ToString() + " " + alert.TriggerWords;
+                        var query = "from:" + alert.TwitterFollowId.ToString() + " " + alert.TriggerWords.Trim();
                         
 
                         var tweets = await _twtCtx.Status.Where(c => c.Type == StatusType.User && c.UserID == (ulong)alert.TwitterFollowId).ToListAsync();
