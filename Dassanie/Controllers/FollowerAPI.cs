@@ -72,14 +72,15 @@ namespace Dassanie.Controllers
                 try
                 {
                     var followerQuery = _twtContext.Friendship
-                    .Where(c => c.Count == 500 && c.Cursor == csr && c.Type == FriendshipType.FriendsList
+                    .Where(c => c.Count == 15 && c.Cursor == csr && c.Type == FriendshipType.FriendsList
                             && c.UserID == _userDetails.TwitterId.ToString() && c.SkipStatus == true)
                     .SingleOrDefault();
 
                     if (followerQuery != null && followerQuery.Users.Any())
                     {
                         follows.AddRange(followerQuery.Users.Where(c=>Culture.US.CompareInfo.IndexOf(c.ScreenNameResponse, query, System.Globalization.CompareOptions.IgnoreCase)>=0).ToList());
-                        csr = followerQuery.CursorMovement.Next;
+                        //csr = followerQuery.CursorMovement.Next;
+                        csr = 0;
                     }
                     else
                     {
