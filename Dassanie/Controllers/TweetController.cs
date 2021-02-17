@@ -62,10 +62,11 @@ namespace Dassanie.Controllers
 
                             foreach (var newTweet in newTweets)
                             {
+                                _logger.LogInformation($"We are checking this tweet: {newTweet.Text} ------- We are looking for any of these words: {alert.TriggerWords}");
                                 if (alert.AlertWords.Any(c => newTweet.Text.Contains(c, StringComparison.CurrentCultureIgnoreCase)))
                                 {
                                     _logger.LogInformation($"We're sending {user.UserName} a tweet {newTweet.Text}");
-                                    _messageHelper.SendAlertsAsync(user, alert, newTweet);
+                                    _messageHelper.SendAlertsAsync(user, alert, newTweet, _logger);
                                 }
                                 
                             }

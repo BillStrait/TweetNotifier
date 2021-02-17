@@ -193,7 +193,7 @@ namespace Dassanie.Areas.Identity.Pages.Account
                             $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
                         var helper = new MessageDeliveryHelper();
-                        await helper.ConfirmSMS(user);
+                        await helper.ConfirmSMS(user, _logger);
 
                         // If account confirmation is required, we need to show the link if we don't have a real email sender
                         if (_userManager.Options.SignIn.RequireConfirmedAccount)
