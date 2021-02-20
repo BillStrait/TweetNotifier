@@ -4,6 +4,7 @@ using LinqToTwitter;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,15 +16,17 @@ namespace Dassanie.Controllers
     [ApiController]
     public class FollowerAPI : ControllerBase
     {
+        private IMemoryCache _cache;
         private readonly ApplicationDbContext _context;
         private IdentityUser _user;
         private TwitterContext _twtContext;
         private UserDetail _userDetails;
 
-        public FollowerAPI(ApplicationDbContext context)
+        public FollowerAPI(ApplicationDbContext context, IMemoryCache memoryCache)
         {
             
             _context = context;
+            _cache = memoryCache;
         }
 
         public IEnumerable<User> Get(string term)
@@ -31,7 +34,7 @@ namespace Dassanie.Controllers
             List<User> users = new List<User>();
             if (!string.IsNullOrEmpty(term))
             {
-                users = GetFollows(term);
+                users = SearchFollows(term);
             }
             return users;
         }
@@ -60,42 +63,47 @@ namespace Dassanie.Controllers
                 }
             });
         }
-        private List<User> GetFollows(string query)
+        private List<User> GetFollows()
         {
-            SetupUser();
-            SetupContext();
-            long csr = -1;
             var follows = new List<User>();
 
-            do
+            if(!_cache.TryGetValue(User.Identity.Name + "-users", out follows))
             {
-                try
+                follows = new List<User>();
+                SetupUser();
+                SetupContext();
+                long csr = -1;
+
+                do
                 {
                     var followerQuery = _twtContext.Friendship
-                    .Where(c => c.Count == 15 && c.Cursor == csr && c.Type == FriendshipType.FriendsList
+                    .Where(c => c.Cursor == csr && c.Type == FriendshipType.FriendsList && c.Count == 200
                             && c.UserID == _userDetails.TwitterId.ToString() && c.SkipStatus == true)
                     .SingleOrDefault();
 
                     if (followerQuery != null && followerQuery.Users.Any())
                     {
-                        follows.AddRange(followerQuery.Users.Where(c=>Culture.US.CompareInfo.IndexOf(c.ScreenNameResponse, query, System.Globalization.CompareOptions.IgnoreCase)>=0).ToList());
-                        //csr = followerQuery.CursorMovement.Next;
-                        csr = 0;
+                        follows.AddRange(followerQuery.Users.ToList());
+                        csr = followerQuery.CursorMovement.Next;
                     }
                     else
                     {
                         csr = 0;
                     }
-                }
-                catch(Exception e)
-                {
-                    var i = 0;
-                    i++;
-                }
-            }
-            while (csr != 0);
 
+                }
+                while (csr != 0);
+                var options = new MemoryCacheEntryOptions().SetAbsoluteExpiration(TimeSpan.FromMinutes(15));
+                _cache.Set(User.Identity.Name + "-users", follows, options);
+            }
             return follows;
+        }
+
+        private List<User> SearchFollows(string query)
+        {
+            var follows = GetFollows();
+
+            return follows.Where(c => Culture.US.CompareInfo.IndexOf(c.ScreenNameResponse, query, System.Globalization.CompareOptions.IgnoreCase) >= 0).ToList();
         }
     }
 }
