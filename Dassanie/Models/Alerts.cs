@@ -25,7 +25,7 @@ namespace Dassanie.Models
 
         public int AlertId { get; set; }
         public string UserId { get; set; }
-        public int TwitterFollowId { get; set; }
+        public ulong TwitterFollowId { get; set; }
         public string TwitterFollowName { get; set; }
         public bool SMS { get; set; }
         public bool Twitter { get; set; }
@@ -101,6 +101,6 @@ namespace Dassanie.Models
         public bool IncludeLink { get; set; }
         public string AlertWords { get; set; }
         public string FollowerName { get; set; }
-        public int SelectedFollower { get; set; }
+        public ulong SelectedFollower { get; set; }
     }
 }
