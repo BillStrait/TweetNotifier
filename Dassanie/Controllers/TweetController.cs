@@ -23,7 +23,7 @@ namespace Dassanie.Controllers
             _logger = logger;
             var auth = new MvcAuthorizer();
             _twtCtx = new TwitterContext(auth);
-            _messageHelper = new MessageDeliveryHelper();
+            _messageHelper = new MessageDeliveryHelper(_logger);
         }
 
         public async Task<IActionResult> Index()
@@ -66,7 +66,7 @@ namespace Dassanie.Controllers
                                 if (alert.AlertWords.Any(c => newTweet.Text.Contains(c, StringComparison.CurrentCultureIgnoreCase)))
                                 {
                                     _logger.LogInformation($"We're sending {user.UserName} a tweet {newTweet.Text}");
-                                    _messageHelper.SendAlertsAsync(user, alert, newTweet, _logger);
+                                    _messageHelper.SendAlertsAsync(user, alert, newTweet);
                                 }
                                 
                             }

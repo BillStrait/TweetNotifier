@@ -90,7 +90,7 @@ namespace Dassanie.Models
             AlertWords = alert.TriggerWords;
             
         }
-
+        public string Error { get; set; }
         public int AlertId { get; set; }
         public string UserId { get; set; }
         public bool SMS { get; set; }

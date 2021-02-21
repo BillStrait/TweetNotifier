@@ -16,7 +16,19 @@ namespace Dassanie.Helpers
 {
     public class MessageDeliveryHelper
     {
-        public async Task<AlertResult> SendAlertsAsync(IdentityUser user, Alert alert, Status tweet, ILogger logger)
+        private ILogger _logger;
+
+        public MessageDeliveryHelper()
+        {
+            //TODO: Add a moq logger.
+        }
+
+        public MessageDeliveryHelper(ILogger logger)
+        {
+            _logger = logger;
+        }
+
+        public async Task<AlertResult> SendAlertsAsync(IdentityUser user, Alert alert, Status tweet)
         {
             Task<bool> emailSuccessTask = null, smsSuccessTask = null;
             bool? emailSuccess = null, smsSuccess = null;
@@ -39,8 +51,12 @@ namespace Dassanie.Helpers
                 {
                     message += $"\n\n{tweet.User.ScreenNameResponse}/status/{tweet.StatusID}";
                 }
-                logger.LogInformation($"Sending an SMS to {alert.UserId}");
-                smsSuccessTask = SendSMSAsync(user.PhoneNumber, message, logger);
+                if (_logger != null)
+                {
+                    _logger.LogInformation($"Sending an SMS to {alert.UserId}");
+                }
+                
+                smsSuccessTask = SendSMSAsync(user.PhoneNumber, message);
             }
 
             if(emailSuccessTask != null)
@@ -55,15 +71,15 @@ namespace Dassanie.Helpers
 
             return result;
         }
-        public async Task<bool> ConfirmSMS(IdentityUser user, ILogger logger)
+        public async Task<bool> ConfirmSMS(IdentityUser user)
         {
             var message = "Someone, hopefully you, signed up for a twitter alert service with this number. If this was not you, no action is needed. If it is, please reply with: yes";
-            var smsSuccessTask = SendSMSAsync(user.PhoneNumber, message, logger);
+            var smsSuccessTask = SendSMSAsync(user.PhoneNumber, message);
             return await smsSuccessTask;
 
         }
 
-        private async Task<bool> SendSMSAsync(string number, string message, ILogger logger)
+        private async Task<bool> SendSMSAsync(string number, string message)
         {
 
             var userName = Environment.GetEnvironmentVariable("clickSendUser");
@@ -88,10 +104,17 @@ namespace Dassanie.Helpers
             if (response.http_code == 200)
             {
                 //TODO: there is a 'data' object in the deserializer that lets us know if the text went through
-                logger.LogInformation($"We got a positive message back from Clicksend. They say the satus of the message is: {response.data.messages[0].status}");
+                if (_logger != null)
+                {
+                    _logger.LogInformation($"We got a positive message back from Clicksend. They say the satus of the message is: {response.data.messages[0].status}");
+                }
+                
                 return true;
             }
-            logger.LogError($"Our attempt to send an sms message failed. Here's what we know. \nHttp response code: {response.http_code} \nResponse message:{response.response_msg}");
+            if (_logger != null)
+            {
+                _logger.LogError($"Our attempt to send an sms message failed. Here's what we know. \nHttp response code: {response.http_code} \nResponse message:{response.response_msg}");
+            }
             return false;
 
         }

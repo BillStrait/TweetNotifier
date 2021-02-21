@@ -192,8 +192,8 @@ namespace Dassanie.Areas.Identity.Pages.Account
                         await _emailSender.SendEmailAsync(Input.Email, "Confirm your email",
                             $"Please confirm your account by <a href='{HtmlEncoder.Default.Encode(callbackUrl)}'>clicking here</a>.");
 
-                        var helper = new MessageDeliveryHelper();
-                        await helper.ConfirmSMS(user, _logger);
+                        var helper = new MessageDeliveryHelper(_logger);
+                        await helper.ConfirmSMS(user);
 
                         // If account confirmation is required, we need to show the link if we don't have a real email sender
                         if (_userManager.Options.SignIn.RequireConfirmedAccount)

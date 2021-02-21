@@ -84,13 +84,14 @@ namespace Dassanie.Controllers
             SetupUser();
 
 
-            if(string.IsNullOrWhiteSpace(TriggerWords) || string.IsNullOrWhiteSpace(FollowerName))
+            if(string.IsNullOrWhiteSpace(TriggerWords) || string.IsNullOrWhiteSpace(FollowerName) || FollowerId==0)
             {
                 //TODO: Abstract creating an empty viewmodel. Add it here and the base create controller. Prolly can use the same thing
                 //for edit too.
 
                 return View(new AlertVM()
                 {
+                    Error = "Sorry, something went wrong. Please refresh this page and try again.",
                     AlertWords = TriggerWords,
                     IncludeLink = IncludeLink
                 });
