@@ -39,7 +39,7 @@ namespace Dassanie.Helpers
                 var message = $"{tweet.User.ScreenNameResponse} tweeted:\n\n{tweet.Text}";
                 if (alert.IncludeLink)
                 {
-                    message += $"\n\n{tweet.User.ScreenNameResponse}/status/{tweet.StatusID}";
+                    message += $"\n\nhttps://twitter.com/{tweet.User.ScreenNameResponse}/status/{tweet.StatusID}";
                 }
                 //emailSuccessTask = SendEmailAsync(user.Email, message);
             }
@@ -49,7 +49,7 @@ namespace Dassanie.Helpers
                 var message = $"{tweet.User.ScreenNameResponse} tweeted:\n\n{tweet.Text}";
                 if (alert.IncludeLink)
                 {
-                    message += $"\n\n{tweet.User.ScreenNameResponse}/status/{tweet.StatusID}";
+                    message += $"\n\nhttps://twitter.com/{tweet.User.ScreenNameResponse}/status/{tweet.StatusID}";
                 }
                 if (_logger != null)
                 {
