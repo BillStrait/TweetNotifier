@@ -50,7 +50,12 @@ namespace Dassanie.Controllers
                     foreach(var alert in userAlerts)
                     {
                         _logger.LogInformation($"We are checking tweets for the following word(s): {alert.TriggerWords}. This is for user {alert.UserId} and the twitter user {alert.TwitterFollowName} - {alert.TwitterFollowId}");
-                        var query = "from:" + alert.TwitterFollowId.ToString() + " " + alert.TriggerWords.Trim();
+                        var query = "from:" + alert.TwitterFollowId.ToString();
+                        if (!string.IsNullOrEmpty(alert.TriggerWords?.Trim()) && !alert.AlwaysAlert)
+                        {
+                            query += " " + alert.TriggerWords.Trim();
+                        }                       
+                            
                         
 
                         var tweets = await _twtCtx.Status.Where(c => c.Type == StatusType.User && c.UserID == (ulong)alert.TwitterFollowId).ToListAsync();
@@ -63,7 +68,7 @@ namespace Dassanie.Controllers
                             foreach (var newTweet in newTweets)
                             {
                                 _logger.LogInformation($"We are checking this tweet: {newTweet.Text} ------- We are looking for any of these words: {alert.TriggerWords}");
-                                if (alert.AlertWords.Any(c => newTweet.Text.Contains(c, StringComparison.CurrentCultureIgnoreCase)))
+                                if (alert.AlwaysAlert || alert.AlertWords.Any(c => newTweet.Text.Contains(c, StringComparison.CurrentCultureIgnoreCase)))
                                 {
                                     _logger.LogInformation($"We're sending {user.UserName} a tweet {newTweet.Text}");
                                     _messageHelper.SendAlertsAsync(user, alert, newTweet);

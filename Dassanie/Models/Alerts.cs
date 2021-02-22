@@ -33,6 +33,7 @@ namespace Dassanie.Models
         public bool WhatsApp { get; set; }
         public bool Email { get; set; }
         public bool IncludeLink { get; set; }
+        public bool AlwaysAlert { get; set; }
         public string TriggerWords { get; set; }
         [NotMapped]
         public List<string> AlertWords
@@ -40,6 +41,10 @@ namespace Dassanie.Models
             get
             {
                 var aws = new List<string>();
+                if(this.TriggerWords == null)
+                {
+                    return aws;
+                }
                 var tws = this.TriggerWords.Split(' ').ToList();
                 foreach(var tw in tws)
                 {
@@ -88,6 +93,7 @@ namespace Dassanie.Models
             SelectedFollower = alert.TwitterFollowId;
             FollowerName = alert.TwitterFollowName;
             AlertWords = alert.TriggerWords;
+            AlwaysAlert = alert.AlwaysAlert;
             
         }
         public string Error { get; set; }
@@ -98,6 +104,7 @@ namespace Dassanie.Models
         public bool Facebook { get; set; }
         public bool WhatsApp { get; set; }
         public bool Email { get; set; }
+        public bool AlwaysAlert { get; set; }
         public bool IncludeLink { get; set; }
         public string AlertWords { get; set; }
         public string FollowerName { get; set; }

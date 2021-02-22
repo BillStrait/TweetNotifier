@@ -79,12 +79,12 @@ namespace Dassanie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create(string FollowerName, ulong FollowerId, string TriggerWords, bool IncludeLink)
+        public async Task<IActionResult> Create(string FollowerName, ulong FollowerId, string TriggerWords, bool IncludeLink, bool AlwaysAlert)
         {
             SetupUser();
 
 
-            if(string.IsNullOrWhiteSpace(TriggerWords) || string.IsNullOrWhiteSpace(FollowerName) || FollowerId==0)
+            if((string.IsNullOrWhiteSpace(TriggerWords) && !AlwaysAlert) || string.IsNullOrWhiteSpace(FollowerName) || FollowerId==0)
             {
                 //TODO: Abstract creating an empty viewmodel. Add it here and the base create controller. Prolly can use the same thing
                 //for edit too.
@@ -93,7 +93,8 @@ namespace Dassanie.Controllers
                 {
                     Error = "Sorry, something went wrong. Please refresh this page and try again.",
                     AlertWords = TriggerWords,
-                    IncludeLink = IncludeLink
+                    IncludeLink = IncludeLink,
+                    AlwaysAlert = AlwaysAlert
                 });
             }
 
@@ -105,7 +106,8 @@ namespace Dassanie.Controllers
                 IncludeLink = IncludeLink,
                 TwitterFollowId = FollowerId,
                 TwitterFollowName = FollowerName,
-                UserId = _user.Id
+                UserId = _user.Id,
+                AlwaysAlert = AlwaysAlert
             };
 
             _context.Alerts.Add(alert);
@@ -142,23 +144,24 @@ namespace Dassanie.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(int alertId, string followerName, ulong followerId, string triggerWords, bool includeLink)
+        public async Task<IActionResult> Edit(int alertId, string triggerWords, bool includeLink, bool alwaysAlert)
         {
             SetupUser();
 
             var alert = await _context.Alerts.FirstAsync(c => c.AlertId == alertId && c.UserId == _userDetails.UserId);
 
-            if (alert == null || string.IsNullOrEmpty(followerName) || followerId == 0) 
-            {
+            if (alert == null) {
                 return NotFound();
+            }
+            else if(string.IsNullOrEmpty(triggerWords) && !alwaysAlert) 
+            {
+                return View(new AlertVM(alert) { Error = "Something went wrong. Please make sure you have either Alert Words or Always Alert enabled. If the problem persists please return to the index and try again." });
             }
 
 
-
-            alert.TwitterFollowId = followerId;
-            alert.TwitterFollowName = followerName;
             alert.IncludeLink = includeLink;
             alert.TriggerWords = triggerWords;
+            alert.AlwaysAlert = alwaysAlert;
 
             if (ModelState.IsValid)
             {

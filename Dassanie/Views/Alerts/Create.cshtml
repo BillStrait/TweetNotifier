@@ -12,20 +12,27 @@
             <div class="form-group">
                 <label class="control-label">Target User</label>
                 <input id="FollowerName" name="FollowerName" />
-                <input id="FollowerId" name="FollowerId" type="hidden"/>
+                <input id="FollowerId" name="FollowerId" type="hidden" />
             </div>
-            
+
             <div class="form-group form-check">
                 <label class="form-check-label">
                     <input class="form-check-input" asp-for="IncludeLink" /> @Html.DisplayNameFor(model => model.IncludeLink)
                 </label>
             </div>
+            <div class="form-group form-check">
+                <label class="form-check-label">
+                    <input class="form-check-input" asp-for="AlwaysAlert" /> <span>Alert for all tweets</span>
+                </label>
+            </div>
             <div class="form-group">
                 <label class="control-label">Trigger Words</label>
-                <input type="text"  name= "TriggerWords" placeholder="Seperate trigger words with a space" />
+                <input type="text" name="TriggerWords" placeholder="Seperate trigger words with a space" />
             </div>
             <div class="form-group">
                 <input type="submit" value="Create" class="btn btn-primary" />
+            </div>
+            <div class="form-group">
                 @if (!string.IsNullOrEmpty(Model.Error))
                 {
                     <span style="color:red;"> @Model.Error</span>

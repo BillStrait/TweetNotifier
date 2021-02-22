@@ -22,6 +22,9 @@
             <th>
                 Include the Link
             </th>
+            <th>
+                Always Alert
+            </th>
             <th></th>
         </tr>
     </thead>
@@ -37,6 +40,9 @@
             </td>
             <td>
                 @Html.DisplayFor(modelItem => item.IncludeLink)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem=>item.AlwaysAlert)
             </td>
             <td>
                 <a asp-action="Edit" asp-route-id="@item.AlertId">Edit</a> |
